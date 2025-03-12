@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.35325.158
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winfsp.dll", "winfsp_dll.vcxproj", "{4A7C0B21-9E10-4C81-92DE-1493EFCF24EB}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -324,5 +324,8 @@ Global
 		{6CDF9411-B852-4EAC-822D-8F930675F17B} = {04A4762C-FAB9-4196-9AC8-0757F3E8AB79}
 		{264A5D09-126F-4760-A3F1-4B3B95C925AA} = {04A4762C-FAB9-4196-9AC8-0757F3E8AB79}
 		{1E997BEC-1642-4A5C-B252-852DA094E11E} = {04A4762C-FAB9-4196-9AC8-0757F3E8AB79}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {22779F66-F5BD-4371-9EA8-8F1961709590}
 	EndGlobalSection
 EndGlobal

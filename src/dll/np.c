@@ -56,6 +56,7 @@ enum
 
 DWORD APIENTRY NPGetCaps(DWORD Index)
 {
+    DEBUGLOG("WINFSP.NPGetCaps, Index: %d\n", Index);
     switch (Index)
     {
     case WNNC_ADMIN:
@@ -465,19 +466,38 @@ DWORD APIENTRY NPGetConnection(
     SIZE_T VolumeListSize, VolumeNameSize;
     ULONG Backslashes;
 
-    if (!FspNpCheckLocalName(lpLocalName))
+    DEBUGLOG("WINFSP.NPGetConnection\n");
+    if (lpLocalName)
+        OutputDebugStringW(lpLocalName);
+    else
+        DEBUGLOG("WINFSP.NPGetConnection.null local name");
+
+    if (lpRemoteName)
+        OutputDebugStringW(lpRemoteName);
+    else
+        DEBUGLOG("WINFSP.NPGetConnection.null lpRemoteName");
+
+    if (!FspNpCheckLocalName(lpLocalName)) {
+        DEBUGLOG("WINFSP.NPGetConnection, return WN_BAD_LOCALNAME, %d\n", lpLocalName[2]);
         return WN_BAD_LOCALNAME;
+    }
 
     LocalNameBuf[0] = lpLocalName[0] & ~0x20; /* convert to uppercase */
     LocalNameBuf[1] = L':';
     LocalNameBuf[2] = L'\0';
 
-    if (0 == QueryDosDeviceW(LocalNameBuf, VolumeNameBuf, sizeof VolumeNameBuf))
+    if (0 == QueryDosDeviceW(LocalNameBuf, VolumeNameBuf, sizeof VolumeNameBuf)) {
+        DEBUGLOG("WINFSP.NPGetConnection, return WN_NOT_CONNECTED\n");
         return WN_NOT_CONNECTED;
+    }
 
     Result = FspNpGetVolumeList(&VolumeListBuf, &VolumeListSize);
-    if (!NT_SUCCESS(Result))
+    if (!NT_SUCCESS(Result)) {
+        DEBUGLOG("WINFSP.NPGetConnection, return WN_NOT_CONNECTED2\n");
         return WN_NOT_CONNECTED;
+    }
+
+    DEBUGLOG("WINFSP.NPGetConnection.FspNpGetVolumeList, size:%d", VolumeListSize);
 
     NpResult = WN_NOT_CONNECTED;
     for (P = VolumeListBuf, VolumeListBufEnd = (PVOID)((PUINT8)P + VolumeListSize), VolumeName = P;
@@ -485,6 +505,8 @@ DWORD APIENTRY NPGetConnection(
     {
         if (L'\0' == *P)
         {
+            OutputDebugStringW(VolumeName);
+            DEBUGLOG("WINFSP.NPGetConnection.checking, VolumeName:");
             if (0 == invariant_wcscmp(VolumeNameBuf, VolumeName))
             {
                 /*
@@ -528,6 +550,8 @@ DWORD APIENTRY NPGetConnection(
 
     MemFree(VolumeListBuf);
 
+    DEBUGLOG("WINFSP.NPGetConnection, return NpResult:%d\n", NpResult);
+
     return NpResult;
 }
 
@@ -549,31 +573,43 @@ DWORD APIENTRY NPAddConnection(LPNETRESOURCEW lpNetResource, LPWSTR lpPassword, 
     PCREDENTIALW Credential = 0;
 #endif
 
-    if (dwType & RESOURCETYPE_PRINT)
+    DEBUGLOG("WINFSP.NPAddConnection\n");
+
+    if (dwType & RESOURCETYPE_PRINT) {
+        DEBUGLOG("WINFSP.NPAddConnection, return WN_BAD_VALUE\n"); 
         return WN_BAD_VALUE;
+    }
 
     if (!FspNpParseRemoteName(lpRemoteName,
-        &ClassName, &ClassNameLen, &InstanceName, &InstanceNameLen))
+        &ClassName, &ClassNameLen, &InstanceName, &InstanceNameLen)) {
+        DEBUGLOG("WINFSP.NPAddConnection, return WN_BAD_VALUE2\n");
         return WN_BAD_NETNAME;
+    }
     RemoteName = lpRemoteName + 1;
 
     LocalNameBuf[0] = L'\0';
     if (0 != lpLocalName && L'\0' != lpLocalName[0])
     {
-        if (!FspNpCheckLocalName(lpLocalName))
+        if (!FspNpCheckLocalName(lpLocalName)) {
+            DEBUGLOG("WINFSP.NPAddConnection, return WN_BAD_LOCALNAME\n");
             return WN_BAD_LOCALNAME;
+        }
 
         LocalNameBuf[0] = lpLocalName[0] & ~0x20; /* convert to uppercase */
         LocalNameBuf[1] = L':';
         LocalNameBuf[2] = L'\0';
 
-        if (GetLogicalDrives() & (1 << (LocalNameBuf[0] - 'A')))
+        if (GetLogicalDrives() & (1 << (LocalNameBuf[0] - 'A'))) {
+            DEBUGLOG("WINFSP.NPAddConnection, return WN_ALREADY_CONNECTED\n");
             return WN_ALREADY_CONNECTED;
+        }
     }
 
     NpResult = FspNpGetRemoteInfo(lpRemoteName, 0, &CredentialsKind, &AllowImpersonation);
-    if (WN_SUCCESS != NpResult)
+    if (WN_SUCCESS != NpResult) {
+        DEBUGLOG("WINFSP.NPAddConnection, return FspNpGetRemoteInfo:%d\n", NpResult);
         return NpResult;
+    }
 
 #if defined(FSP_NP_CREDENTIAL_MANAGER)
     /* if we need credentials and none were passed check with the credential manager */
@@ -731,6 +767,8 @@ exit:
         CredFree(Credential);
 #endif
 
+    DEBUGLOG("WINFSP.NPAddConnection.return end:%d\n", NpResult);
+
     return NpResult;
 }
 
@@ -744,6 +782,8 @@ DWORD APIENTRY NPAddConnection3(HWND hwndOwner,
 #if defined(FSP_NP_CREDENTIAL_MANAGER)
     BOOL Save = FALSE;
 #endif
+
+    DEBUGLOG("WINFSP.NPAddConnection3\n");
 
     //dwFlags |= CONNECT_INTERACTIVE | CONNECT_PROMPT; /* TESTING ONLY! */
 
@@ -808,6 +848,8 @@ DWORD APIENTRY NPAddConnection3(HWND hwndOwner,
 
     SecureZeroMemory(Password, sizeof Password);
 
+    DEBUGLOG("WINFSP.NPAddConnection3.return :%d\n", NpResult);
+
     return NpResult;
 }
 
@@ -822,23 +864,32 @@ DWORD APIENTRY NPCancelConnection(LPWSTR lpName, BOOL fForce)
     PWSTR Argv[2];
     ULONG Argl[2];
 
+    DEBUGLOG("WINFSP.NPCancelConnection, %d\n", fForce);
+    //FspDebugLog("WINFSP.NPCancelConnection");
+
     if (FspNpCheckLocalName(lpName))
     {
         RemoteNameSize = sizeof RemoteNameBuf / sizeof(WCHAR);
         NpResult = NPGetConnection(lpName, RemoteNameBuf, &RemoteNameSize);
-        if (WN_SUCCESS != NpResult)
+        if (WN_SUCCESS != NpResult) {
+            DEBUGLOG("WINFSP.NPCancelConnection.return, %d\n", NpResult);
             return NpResult;
+        }
 
         RemoteName = RemoteNameBuf;
     }
     else if (FspNpCheckRemoteName(lpName))
         RemoteName = lpName;
-    else
+    else {
+        DEBUGLOG("WINFSP.NPCancelConnection.return WN_BAD_NETNAME\n");
         return WN_BAD_NETNAME;
+    }
 
     if (!FspNpParseRemoteName(RemoteName,
-        &ClassName, &ClassNameLen, &InstanceName, &InstanceNameLen))
+        &ClassName, &ClassNameLen, &InstanceName, &InstanceNameLen)) {
+        DEBUGLOG("WINFSP.NPCancelConnection.return WN_BAD_NETNAME\n");
         return WN_BAD_NETNAME;
+    }
 
     Argc = 0;
     Argv[Argc] = ClassName; Argl[Argc] = ClassNameLen; Argc++;
@@ -860,6 +911,8 @@ DWORD APIENTRY NPCancelConnection(LPWSTR lpName, BOOL fForce)
         break;
     }
 
+    DEBUGLOG("WINFSP.NPCancelConnection.return NpResult:%d\n", NpResult);
+
     return NpResult;
 }
 
@@ -875,6 +928,9 @@ DWORD APIENTRY NPGetUniversalName(
     WCHAR RemoteNameBuf[sizeof(((FSP_FSCTL_VOLUME_PARAMS *)0)->Prefix) / sizeof(WCHAR)];
     DWORD RemoteNameSize, RemainLocalPathSize, RequiredBufferSize;
 
+    DEBUGLOG("WINFSP.NPGetUniversalName, level:%d", dwInfoLevel);
+    OutputDebugStringW(lpLocalPath);
+
     if (UNIVERSAL_NAME_INFO_LEVEL != dwInfoLevel &&
         REMOTE_NAME_INFO_LEVEL != dwInfoLevel)
         return WN_BAD_LEVEL;
@@ -882,8 +938,11 @@ DWORD APIENTRY NPGetUniversalName(
     if (0 == lpLocalPath ||
         L'\0' == lpLocalPath[0] ||
         L':' != lpLocalPath[1] ||
-        (L'\0' != lpLocalPath[2] && L'\\' != lpLocalPath[2]))
+        (L'\0' != lpLocalPath[2] && L'\\' != lpLocalPath[2])) {
+        DEBUGLOG("WINFSP.NPGetUniversalName, BAD LOCALNAME");
+        //OutputDebugStringW(lpLocalPath);
         return WN_BAD_LOCALNAME;
+    }
 
     LocalNameBuf[0] = lpLocalPath[0];
     LocalNameBuf[1] = L':';
@@ -892,8 +951,10 @@ DWORD APIENTRY NPGetUniversalName(
 
     RemoteNameSize = sizeof RemoteNameBuf / sizeof(WCHAR);
     NpResult = NPGetConnection(LocalNameBuf, RemoteNameBuf, &RemoteNameSize);
-    if (WN_SUCCESS != NpResult)
+    if (WN_SUCCESS != NpResult) {
+        DEBUGLOG("WINFSP.NPGetUniversalName.NPGetConnection:%d\n", NpResult);
         return NpResult;
+    }
 
     RemoteNameSize = lstrlenW(RemoteNameBuf) * sizeof(WCHAR);
     RemainLocalPathSize = lstrlenW(RemainLocalPath) * sizeof(WCHAR) + sizeof(WCHAR)/* term-0 */;
@@ -953,6 +1014,7 @@ DWORD APIENTRY NPGetUniversalName(
         NpResult = WN_BAD_LEVEL;
 
 exit:
+    DEBUGLOG("WINFSP.NPGetUniversalName.return:%d\n", NpResult);
     return NpResult;
 }
 

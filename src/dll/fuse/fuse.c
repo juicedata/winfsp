@@ -1145,6 +1145,8 @@ FSP_FUSE_API int32_t fsp_fuse_ntstatus_from_errno(struct fsp_fuse_env *env,
         #undef FSP_FUSE_ERRNO
         #define FSP_FUSE_ERRNO 87
         #include "errno.i"
+        case 10003:
+            return STATUS_OBJECT_PATH_NOT_FOUND;
         default:
             return STATUS_ACCESS_DENIED;
         }

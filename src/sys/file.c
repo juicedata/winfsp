@@ -268,6 +268,8 @@ NTSTATUS FspFileNodeCopyActiveList(PDEVICE_OBJECT DeviceObject,
 {
     PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeCopyActiveList", 0);
+
     NTSTATUS Result;
     ULONG Index;
 
@@ -288,6 +290,9 @@ NTSTATUS FspFileNodeCopyOpenList(PDEVICE_OBJECT DeviceObject,
 {
     PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeCopyOpenList", 0);
+
+
     NTSTATUS Result;
     ULONG Index;
 
@@ -307,6 +312,9 @@ VOID FspFileNodeDeleteList(FSP_FILE_NODE **FileNodes, ULONG FileNodeCount)
 {
     PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeDeleteList", 0);
+
+
     ULONG Index;
 
     for (Index = 0; FileNodeCount > Index; Index++)
@@ -319,6 +327,9 @@ NTSTATUS FspFileNodeCreate(PDEVICE_OBJECT DeviceObject,
     ULONG ExtraSize, FSP_FILE_NODE **PFileNode)
 {
     PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeCreate", 0);
+
 
     *PFileNode = 0;
 
@@ -366,6 +377,9 @@ VOID FspFileNodeDelete(FSP_FILE_NODE *FileNode)
 {
     PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeDelete", 0);
+
+
     FSP_FSVOL_DEVICE_EXTENSION *FsvolDeviceExtension =
         FspFsvolDeviceExtension(FileNode->FsvolDeviceObject);
 
@@ -398,6 +412,9 @@ VOID FspFileNodeAcquireSharedF(FSP_FILE_NODE *FileNode, ULONG Flags)
 {
     PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeAcquireSharedF", 0);
+
+
     if (0 != FileNode->MainFileNode)
         FileNode = FileNode->MainFileNode;
 
@@ -418,6 +435,9 @@ VOID FspFileNodeAcquireSharedF(FSP_FILE_NODE *FileNode, ULONG Flags)
 BOOLEAN FspFileNodeTryAcquireSharedF(FSP_FILE_NODE *FileNode, ULONG Flags, BOOLEAN Wait)
 {
     PAGED_CODE();
+    
+    DEBUGLOG("FspFileNodeTryAcquireSharedF", 0);
+
 
     if (0 != FileNode->MainFileNode)
         FileNode = FileNode->MainFileNode;
@@ -457,6 +477,8 @@ VOID FspFileNodeAcquireExclusiveF(FSP_FILE_NODE *FileNode, ULONG Flags)
 {
     PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeAcquireExclusiveF", 0);
+
     if (0 != FileNode->MainFileNode)
         FileNode = FileNode->MainFileNode;
 
@@ -477,6 +499,9 @@ VOID FspFileNodeAcquireExclusiveF(FSP_FILE_NODE *FileNode, ULONG Flags)
 BOOLEAN FspFileNodeTryAcquireExclusiveF(FSP_FILE_NODE *FileNode, ULONG Flags, BOOLEAN Wait)
 {
     PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeTryAcquireExclusiveF", 0);
+
 
     if (0 != FileNode->MainFileNode)
         FileNode = FileNode->MainFileNode;
@@ -516,6 +541,9 @@ VOID FspFileNodeConvertExclusiveToSharedF(FSP_FILE_NODE *FileNode, ULONG Flags)
 {
     PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeConvertExclusiveToSharedF", 0);
+
+
     if (0 != FileNode->MainFileNode)
         FileNode = FileNode->MainFileNode;
 
@@ -533,6 +561,9 @@ VOID FspFileNodeConvertExclusiveToSharedF(FSP_FILE_NODE *FileNode, ULONG Flags)
 VOID FspFileNodeSetOwnerF(FSP_FILE_NODE *FileNode, ULONG Flags, PVOID Owner)
 {
     PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeSetOwnerF", 0);
+
 
     if (0 != FileNode->MainFileNode)
         FileNode = FileNode->MainFileNode;
@@ -553,6 +584,9 @@ VOID FspFileNodeSetOwnerF(FSP_FILE_NODE *FileNode, ULONG Flags, PVOID Owner)
 VOID FspFileNodeReleaseF(FSP_FILE_NODE *FileNode, ULONG Flags)
 {
     PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeReleaseF", 0);
+
 
     if (0 != FileNode->MainFileNode)
         FileNode = FileNode->MainFileNode;
@@ -617,6 +651,9 @@ NTSTATUS FspFileNodeOpen(FSP_FILE_NODE *FileNode, PFILE_OBJECT FileObject,
      */
 
     PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeOpen", 0);
+
 
     PDEVICE_OBJECT FsvolDeviceObject = FileNode->FsvolDeviceObject;
     FSP_FILE_NODE *OpenedFileNode = 0;
@@ -802,6 +839,9 @@ VOID FspFileNodeCleanup(FSP_FILE_NODE *FileNode, PFILE_OBJECT FileObject, PULONG
 
     PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeCleanup", 0);
+
+
     PDEVICE_OBJECT FsvolDeviceObject = FileNode->FsvolDeviceObject;
     FSP_FILE_DESC *FileDesc = FileObject->FsContext2;
     BOOLEAN DeletePending, Delete, SetAllocationSize, SingleHandle;
@@ -842,6 +882,9 @@ VOID FspFileNodeCleanupFlush(FSP_FILE_NODE *FileNode, PFILE_OBJECT FileObject)
      */
 
     PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeCleanupFlush", 0);
+
 
     PDEVICE_OBJECT FsvolDeviceObject = FileNode->FsvolDeviceObject;
     FSP_FSVOL_DEVICE_EXTENSION *FsvolDeviceExtension = FspFsvolDeviceExtension(FsvolDeviceObject);
@@ -900,6 +943,9 @@ VOID FspFileNodeCleanupComplete(FSP_FILE_NODE *FileNode, PFILE_OBJECT FileObject
      */
 
     PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeCleanupComplete", 0);
+
 
     PDEVICE_OBJECT FsvolDeviceObject = FileNode->FsvolDeviceObject;
     FSP_FSVOL_DEVICE_EXTENSION *FsvolDeviceExtension = FspFsvolDeviceExtension(FsvolDeviceObject);
@@ -1051,6 +1097,9 @@ VOID FspFileNodeClose(FSP_FILE_NODE *FileNode,
 
     PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeClose", 0);
+
+
     PDEVICE_OBJECT FsvolDeviceObject = FileNode->FsvolDeviceObject;
     BOOLEAN DeletedFromContextTable = FALSE;
 
@@ -1111,6 +1160,9 @@ NTSTATUS FspFileNodeFlushAndPurgeCache(FSP_FILE_NODE *FileNode,
 
     PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeFlushAndPurgeCache", 0);
+
+
     LARGE_INTEGER FlushOffset;
     PLARGE_INTEGER PFlushOffset = &FlushOffset;
     FSP_FSCTL_FILE_INFO FileInfo;
@@ -1168,6 +1220,8 @@ VOID FspFileNodeOverwriteStreams(FSP_FILE_NODE *FileNode)
 
     PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeOverwriteStreams", 0);
+
     ASSERT(0 == FileNode->MainFileNode);
 
     PDEVICE_OBJECT FsvolDeviceObject = FileNode->FsvolDeviceObject;
@@ -1211,6 +1265,9 @@ NTSTATUS FspFileNodeCheckBatchOplocksOnAllStreams(
      */
 
     PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeCheckBatchOplocksOnAllStreams", 0);
+
 
     ASSERT(0 == FileNode->MainFileNode);
 
@@ -1322,6 +1379,9 @@ NTSTATUS FspFileNodeRenameCheck(PDEVICE_OBJECT FsvolDeviceObject, PIRP OplockIrp
     BOOLEAN PosixRename)
 {
     PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeRenameCheck", 0);
+
 
     NTSTATUS Result;
     ULONG HasHandles, IsBatchOplock, IsHandleOplock;
@@ -1593,6 +1653,9 @@ VOID FspFileNodeRename(FSP_FILE_NODE *FileNode, PUNICODE_STRING NewFileName)
 
     PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeRename", 0);
+
+
     PDEVICE_OBJECT FsvolDeviceObject = FileNode->FsvolDeviceObject;
     BOOLEAN Deleted, Inserted, AcquireForeign;
     FSP_FILE_NODE *InsertedFileNode;
@@ -1681,6 +1744,9 @@ VOID FspFileNodeGetFileInfo(FSP_FILE_NODE *FileNode, FSP_FSCTL_FILE_INFO *FileIn
 {
     PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeGetFileInfo", 0);
+
+
     FileInfo->AllocationSize = FileNode->Header.AllocationSize.QuadPart;
     FileInfo->FileSize = FileNode->Header.FileSize.QuadPart;
 
@@ -1706,6 +1772,9 @@ BOOLEAN FspFileNodeTryGetFileInfo(FSP_FILE_NODE *FileNode, FSP_FSCTL_FILE_INFO *
 
     UINT64 CurrentTime = KeQueryInterruptTime();
 
+    DEBUGLOG("FspFileNodeTryGetFileInfo", 0);
+
+
     if (0 != FileNode->MainFileNode)
     {
         /* if this is a stream the main file basic info must have not expired as well! */
@@ -1724,6 +1793,9 @@ BOOLEAN FspFileNodeTryGetFileInfoByName(PDEVICE_OBJECT FsvolDeviceObject, PIRP I
     PUNICODE_STRING FileName, FSP_FSCTL_FILE_INFO *FileInfo)
 {
     PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeTryGetFileInfoByName", 0);
+
 
     PIO_STACK_LOCATION IrpSp = IoGetCurrentIrpStackLocation(Irp);
     PACCESS_STATE AccessState = IrpSp->Parameters.Create.SecurityContext->AccessState;
@@ -1796,6 +1868,9 @@ VOID FspFileNodeSetFileInfo(FSP_FILE_NODE *FileNode, PFILE_OBJECT CcFileObject,
     const FSP_FSCTL_FILE_INFO *FileInfo, BOOLEAN TruncateOnClose)
 {
     PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeSetFileInfo", 0);
+
 
     FSP_FSVOL_DEVICE_EXTENSION *FsvolDeviceExtension =
         FspFsvolDeviceExtension(FileNode->FsvolDeviceObject);
@@ -1910,6 +1985,9 @@ BOOLEAN FspFileNodeTrySetFileInfoAndSecurityOnOpen(FSP_FILE_NODE *FileNode, PFIL
 {
     PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeTrySetFileInfoAndSecurityOnOpen", 0);
+
+
     BOOLEAN EarlyExit;
 
     FspFsvolDeviceLockContextTable(FileNode->FsvolDeviceObject);
@@ -1948,6 +2026,9 @@ BOOLEAN FspFileNodeTrySetFileInfo(FSP_FILE_NODE *FileNode, PFILE_OBJECT CcFileOb
     const FSP_FSCTL_FILE_INFO *FileInfo, ULONG InfoChangeNumber)
 {
     PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeTrySetFileInfo", 0);
+
 
     if (FspFileNodeFileInfoChangeNumber(FileNode) != InfoChangeNumber)
         return FALSE;
@@ -1988,6 +2069,9 @@ BOOLEAN FspFileNodeReferenceSecurity(FSP_FILE_NODE *FileNode, PCVOID *PBuffer, P
 VOID FspFileNodeSetSecurity(FSP_FILE_NODE *FileNode, PCVOID Buffer, ULONG Size)
 {
     // !PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeSetSecurity", 0);
+
 
     if (0 != FileNode->MainFileNode)
         FileNode = FileNode->MainFileNode;
@@ -2065,6 +2149,9 @@ VOID FspFileNodeSetDirInfo(FSP_FILE_NODE *FileNode, PCVOID Buffer, ULONG Size)
 {
     // !PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeSetDirInfo", 0);
+
+
     FSP_FSVOL_DEVICE_EXTENSION *FsvolDeviceExtension =
         FspFsvolDeviceExtension(FileNode->FsvolDeviceObject);
     FSP_FILE_NODE_NONPAGED *NonPaged = FileNode->NonPaged;
@@ -2090,6 +2177,9 @@ BOOLEAN FspFileNodeTrySetDirInfo(FSP_FILE_NODE *FileNode, PCVOID Buffer, ULONG S
 {
     // !PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeTrySetDirInfo", 0);
+
+
     if (FspFileNodeDirInfoChangeNumber(FileNode) != DirInfoChangeNumber)
         return FALSE;
 
@@ -2100,6 +2190,9 @@ BOOLEAN FspFileNodeTrySetDirInfo(FSP_FILE_NODE *FileNode, PCVOID Buffer, ULONG S
 static VOID FspFileNodeInvalidateDirInfo(FSP_FILE_NODE *FileNode)
 {
     // !PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeInvalidateDirInfo", 0);
+
 
     PDEVICE_OBJECT FsvolDeviceObject = FileNode->FsvolDeviceObject;
     FSP_FSVOL_DEVICE_EXTENSION *FsvolDeviceExtension = FspFsvolDeviceExtension(FsvolDeviceObject);
@@ -2122,6 +2215,9 @@ static VOID FspFileNodeInvalidateDirInfoByName(PDEVICE_OBJECT FsvolDeviceObject,
 
     FSP_FILE_NODE *FileNode;
 
+    DEBUGLOG("FspFileNodeInvalidateDirInfoByName", 0);
+
+
     FspFsvolDeviceLockContextTable(FsvolDeviceObject);
     FileNode = FspFsvolDeviceLookupContextByName(FsvolDeviceObject, FileName);
     if (0 != FileNode)
@@ -2139,6 +2235,9 @@ VOID FspFileNodeInvalidateParentDirInfo(FSP_FILE_NODE *FileNode)
 {
     PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeInvalidateParentDirInfo", 0);
+
+
     if (sizeof(WCHAR) == FileNode->FileName.Length && L'\\' == FileNode->FileName.Buffer[0])
         return; /* root does not have a parent */
 
@@ -2152,6 +2251,9 @@ VOID FspFileNodeInvalidateParentDirInfo(FSP_FILE_NODE *FileNode)
 BOOLEAN FspFileNodeReferenceStreamInfo(FSP_FILE_NODE *FileNode, PCVOID *PBuffer, PULONG PSize)
 {
     // !PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeInvalidateParentDirInfo", 0);
+
 
     if (0 != FileNode->MainFileNode)
         FileNode = FileNode->MainFileNode;
@@ -2171,6 +2273,9 @@ BOOLEAN FspFileNodeReferenceStreamInfo(FSP_FILE_NODE *FileNode, PCVOID *PBuffer,
 VOID FspFileNodeSetStreamInfo(FSP_FILE_NODE *FileNode, PCVOID Buffer, ULONG Size)
 {
     // !PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeSetStreamInfo", 0);
+
 
     if (0 != FileNode->MainFileNode)
         FileNode = FileNode->MainFileNode;
@@ -2200,6 +2305,9 @@ BOOLEAN FspFileNodeTrySetStreamInfo(FSP_FILE_NODE *FileNode, PCVOID Buffer, ULON
 {
     // !PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeTrySetStreamInfo", 0);
+
+
     if (FspFileNodeStreamInfoChangeNumber(FileNode) != StreamInfoChangeNumber)
         return FALSE;
 
@@ -2210,6 +2318,9 @@ BOOLEAN FspFileNodeTrySetStreamInfo(FSP_FILE_NODE *FileNode, PCVOID Buffer, ULON
 VOID FspFileNodeInvalidateStreamInfo(FSP_FILE_NODE *FileNode)
 {
     // !PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeInvalidateStreamInfo", 0);
+
 
     if (0 != FileNode->MainFileNode)
         FileNode = FileNode->MainFileNode;
@@ -2232,6 +2343,9 @@ BOOLEAN FspFileNodeReferenceEa(FSP_FILE_NODE *FileNode, PCVOID *PBuffer, PULONG 
 {
     // !PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeReferenceEa", 0);
+
+
     if (0 != FileNode->MainFileNode)
         FileNode = FileNode->MainFileNode;
 
@@ -2250,6 +2364,9 @@ BOOLEAN FspFileNodeReferenceEa(FSP_FILE_NODE *FileNode, PCVOID *PBuffer, PULONG 
 VOID FspFileNodeSetEa(FSP_FILE_NODE *FileNode, PCVOID Buffer, ULONG Size)
 {
     // !PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeSetEa", 0);
+
 
     if (0 != FileNode->MainFileNode)
         FileNode = FileNode->MainFileNode;
@@ -2279,6 +2396,9 @@ BOOLEAN FspFileNodeTrySetEa(FSP_FILE_NODE *FileNode, PCVOID Buffer, ULONG Size,
 {
     // !PAGED_CODE();
 
+    DEBUGLOG("FspFileNodeTrySetEa", 0);
+
+
     if (FspFileNodeEaChangeNumber(FileNode) != EaChangeNumber)
         return FALSE;
 
@@ -2289,6 +2409,9 @@ BOOLEAN FspFileNodeTrySetEa(FSP_FILE_NODE *FileNode, PCVOID Buffer, ULONG Size,
 VOID FspFileNodeInvalidateEa(FSP_FILE_NODE *FileNode)
 {
     // !PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeInvalidateEa", 0);
+
 
     if (0 != FileNode->MainFileNode)
         FileNode = FileNode->MainFileNode;
@@ -2311,6 +2434,8 @@ VOID FspFileNodeNotifyChange(FSP_FILE_NODE *FileNode, ULONG Filter, ULONG Action
     BOOLEAN InvalidateCaches)
 {
     /* FileNode must be acquired (exclusive or shared) Main */
+
+    DEBUGLOG("FspFileNodeNotifyChange", 0);
 
     PAGED_CODE();
 
@@ -2374,6 +2499,9 @@ VOID FspFileNodeInvalidateCachesAndNotifyChangeByName(PDEVICE_OBJECT FsvolDevice
     BOOLEAN InvalidateParentCaches)
 {
     PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeInvalidateCachesAndNotifyChangeByName", 0);
+
 
     FSP_FILE_NODE *FileNode;
 
@@ -2474,6 +2602,9 @@ VOID FspFileNodeInvalidateCachesAndNotifyChangeByName(PDEVICE_OBJECT FsvolDevice
 NTSTATUS FspFileNodeProcessLockIrp(FSP_FILE_NODE *FileNode, PIRP Irp)
 {
     PAGED_CODE();
+
+    DEBUGLOG("FspFileNodeProcessLockIrp", 0);
+
 
     NTSTATUS Result;
 

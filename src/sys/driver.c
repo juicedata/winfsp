@@ -47,6 +47,8 @@ NTSTATUS DriverEntry(
 {
     FSP_ENTER_DRV();
 
+    DbgPrint("WINFSP driver load!");
+
     FSP_TRACE_INIT();
 
     FspSxsIdentInitialize(&DriverObject->DriverName);

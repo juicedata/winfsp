@@ -144,6 +144,9 @@ static NTSTATUS FspFsvolCreate(
 {
     PAGED_CODE();
 
+    DEBUGLOG("FspFsvolCreate", 0);
+
+
     NTSTATUS Result;
     PECP_LIST ExtraCreateParameters;
     PVOID ExtraCreateParameter;
@@ -267,6 +270,8 @@ static NTSTATUS FspFsvolCreateNoLock(
     BOOLEAN MainFileOpen, PFSP_ATOMIC_CREATE_ECP_CONTEXT AtomicCreateEcp)
 {
     PAGED_CODE();
+
+    DEBUGLOG("FspFsvolCreateNoLock", 0);
 
     NTSTATUS Result;
     FSP_FSVOL_DEVICE_EXTENSION *FsvolDeviceExtension = FspFsvolDeviceExtension(FsvolDeviceObject);
@@ -745,6 +750,8 @@ NTSTATUS FspFsvolCreatePrepare(
 {
     PAGED_CODE();
 
+    DEBUGLOG("FspFsvolCreatePrepare", 0);
+
     NTSTATUS Result;
     BOOLEAN Success;
     PIO_STACK_LOCATION IrpSp = IoGetCurrentIrpStackLocation(Irp);
@@ -856,6 +863,9 @@ NTSTATUS FspFsvolCreateComplete(
     PIRP Irp, const FSP_FSCTL_TRANSACT_RSP *Response)
 {
     FSP_ENTER_IOC(PAGED_CODE());
+
+    DEBUGLOG("FspFsvolCreateComplete", 0);
+
 
     PDEVICE_OBJECT FsvolDeviceObject = IrpSp->DeviceObject;
     FSP_FSVOL_DEVICE_EXTENSION *FsvolDeviceExtension = FspFsvolDeviceExtension(FsvolDeviceObject);
@@ -1297,6 +1307,8 @@ static NTSTATUS FspFsvolCreateTryOpen(PIRP Irp, const FSP_FSCTL_TRANSACT_RSP *Re
 {
     PAGED_CODE();
 
+    DEBUGLOG("FspFsvolCreateTryOpen", 0);
+
     FSP_FSCTL_TRANSACT_REQ *Request = FspIrpRequest(Irp);
     NTSTATUS Result;
     BOOLEAN Success;
@@ -1440,6 +1452,8 @@ static VOID FspFsvolCreatePostClose(FSP_FILE_DESC *FileDesc)
 {
     PAGED_CODE();
 
+    DEBUGLOG("FspFsvolCreatePostClose", 0);
+
     FSP_FILE_NODE *FileNode = FileDesc->FileNode;
     PDEVICE_OBJECT FsvolDeviceObject = FileNode->FsvolDeviceObject;
     FSP_FSCTL_TRANSACT_REQ *Request;
@@ -1469,6 +1483,8 @@ static VOID FspFsvolCreatePostClose(FSP_FILE_DESC *FileDesc)
 static VOID FspFsvolCreateRequestFini(FSP_FSCTL_TRANSACT_REQ *Request, PVOID Context[4])
 {
     PAGED_CODE();
+
+    DEBUGLOG("FspFsvolCreateRequestFini", 0);
 
     PDEVICE_OBJECT FsvolDeviceObject = Context[RequestDeviceObject];
     FSP_FILE_DESC *FileDesc = Context[RequestFileDesc];

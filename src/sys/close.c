@@ -119,6 +119,8 @@ NTSTATUS FspFsvolCloseComplete(
 {
     FSP_ENTER_IOC(PAGED_CODE());
 
+    DEBUGLOG("FspFsvolCloseComplete", 0);
+
     FSP_LEAVE_IOC("FileObject=%p", IrpSp->FileObject);
 }
 
@@ -126,6 +128,8 @@ NTSTATUS FspClose(
     PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     FSP_ENTER_MJ(PAGED_CODE());
+
+    DEBUGLOG("FspClose, %d", 0);
 
     switch (FspDeviceExtension(DeviceObject)->Kind)
     {

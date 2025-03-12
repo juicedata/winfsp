@@ -79,7 +79,7 @@ enum
     fsp_debug_dp                        = 0x10000000,   /* DbgPrint switch */
 };
 extern __declspec(selectany) int fsp_debug =
-    fsp_debug_bp_drvrld | fsp_debug_dt;
+    fsp_debug_bp_drvrld | fsp_debug_dt | fsp_debug_dp;
 const char *NtStatusSym(NTSTATUS Status);
 const char *IrpMajorFunctionSym(UCHAR MajorFunction);
 const char *IrpMinorFunctionSym(UCHAR MajorFunction, UCHAR MinorFunction);
