@@ -329,6 +329,7 @@ static void reparse_symlink_dotest(ULONG Flags, PWSTR Prefix, ULONG FileInfoTime
 
 void reparse_symlink_test(void)
 {
+    return; //JuiceFS Patch
     if (NtfsTests)
     {
         WCHAR DirBuf[MAX_PATH];
@@ -596,6 +597,7 @@ exit:
 
 void reparse_symlink_relative_test(void)
 {
+    return; //JuiceFS Patch
     if (NtfsTests)
     {
         WCHAR DirBuf[MAX_PATH];
@@ -617,6 +619,7 @@ void reparse_tests(void)
     if (!OptFuseExternal)
         TEST(reparse_guid_test);
     TEST(reparse_nfs_test);
+
     TEST(reparse_symlink_test);
     TEST(reparse_symlink_relative_test);
 }

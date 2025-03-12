@@ -273,6 +273,7 @@ int main(int argc, char *argv[])
         {
             if (0 == strcmp("--ntfs", a) || 0 == strcmp("--external", a))
             {
+                tlib_printf("--- external|ntfs ---\n");
                 OptExternal = TRUE;
                 OptFuseExternal = FALSE;
                 NtfsTests = 1;

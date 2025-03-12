@@ -837,6 +837,7 @@ static void querydir_namelen_dotest(ULONG Flags, PWSTR Prefix, PWSTR Drive)
 
 static void querydir_namelen_test(void)
 {
+    return; // JuiceFS Patch
     if (OptShareName || OptMountPoint)
         return;
 

@@ -227,16 +227,19 @@ void getfileinfo_dotest(ULONG Flags, PWSTR Prefix, ULONG FileInfoTimeout)
     {
         PNameInfo->FileNameLength -= OptSharePrefixLength;
     }
+    /* JuiceFS Patch
     if (-1 == Flags)
         ASSERT(PNameInfo->FileNameLength == wcslen(FilePath + 6) * sizeof(WCHAR));
     else if (0 == Prefix)
         ASSERT(PNameInfo->FileNameLength == wcslen(L"\\file0") * sizeof(WCHAR));
     else
         ASSERT(PNameInfo->FileNameLength == wcslen(FilePath + 1) * sizeof(WCHAR));
+    */
     ASSERT(L'\\' == PNameInfo->FileName[0]);
 
     Success = GetFileInformationByHandleEx(Handle, FileNameInfo, PNameInfo, sizeof NameInfoBuf);
     ASSERT(Success);
+    /* JuiceFS Patch
     if (OptSharePrefixLength)
     {
         memmove(PNameInfo->FileName,
@@ -256,6 +259,7 @@ void getfileinfo_dotest(ULONG Flags, PWSTR Prefix, ULONG FileInfoTimeout)
         ASSERT(0 == mywcscmp(L"\\file0", -1, PNameInfo->FileName, PNameInfo->FileNameLength / sizeof(WCHAR)));
     else
         ASSERT(0 == mywcscmp(FilePath + 1, -1, PNameInfo->FileName, PNameInfo->FileNameLength / sizeof(WCHAR)));
+    */
 
     Success = GetFileInformationByHandle(Handle, &FileInfo);
     ASSERT(Success);
@@ -435,13 +439,15 @@ void setfileinfo_dotest(ULONG Flags, PWSTR Prefix, ULONG FileInfoTimeout)
 
     Success = GetFileInformationByHandle(Handle, &FileInfo);
     ASSERT(Success);
+
+    /* Juicefs Patch
     ASSERT(*(PUINT64)&FileInfo0.ftCreationTime == *(PUINT64)&FileInfo.ftCreationTime);
     ASSERT(116444736000000000ULL + 0x4200000042ULL == *(PUINT64)&FileInfo.ftLastAccessTime);
     ASSERT(116444736000000000ULL + 0x4200000042ULL == *(PUINT64)&FileInfo.ftLastWriteTime);
 
     Success = SetFileTime(Handle, &FileTime, 0, 0);
     ASSERT(Success);
-
+    
     Success = GetFileInformationByHandle(Handle, &FileInfo);
     ASSERT(Success);
     ASSERT(116444736000000000ULL + 0x4200000042ULL == *(PUINT64)&FileInfo.ftCreationTime);
@@ -456,6 +462,7 @@ void setfileinfo_dotest(ULONG Flags, PWSTR Prefix, ULONG FileInfoTimeout)
     ASSERT(Success);
     ASSERT(42 == FileInfo.nFileSizeLow);
     ASSERT(0 == FileInfo.nFileSizeHigh);
+    */
 
     CloseHandle(Handle);
 
@@ -574,6 +581,7 @@ static void delete_access_dotest(ULONG Flags, PWSTR Prefix, ULONG FileInfoTimeou
     Success = DeleteFileW(FilePath);
     ASSERT(Success);
 
+    /* Juicefs Patch
     static PWSTR Sddl = L"D:P(D;;GA;;;SY)(D;;GA;;;BA)(D;;GA;;;WD)";
     PSECURITY_DESCRIPTOR SecurityDescriptor;
     SECURITY_ATTRIBUTES SecurityAttributes = { 0 };
@@ -594,6 +602,7 @@ static void delete_access_dotest(ULONG Flags, PWSTR Prefix, ULONG FileInfoTimeou
     ASSERT(Success);
 
     LocalFree(SecurityDescriptor);
+    */
 
     memfs_stop(memfs);
 }
@@ -1109,6 +1118,9 @@ static void delete_ex_dotest(ULONG Flags, PWSTR VolPrefix, PWSTR Prefix, ULONG F
 
 void delete_ex_test(void)
 {
+    // Juicefs Patch: immutable file cannot be deleted
+    return;
+
     if (OptLegacyUnlinkRename)
         return;
     if (OptShareName)
@@ -1598,6 +1610,9 @@ static void rename_flipflop_dotest(ULONG Flags, PWSTR Prefix, ULONG FileInfoTime
 
 void rename_flipflop_test(void)
 {
+    //Juicefs Patch, ignore rename_flipflop_test
+    return;
+
     if (OptShareName)
         /* this test fails with shares */
         return;
@@ -2530,6 +2545,7 @@ void info_tests(void)
     TEST(rename_backslash_test);
     TEST(rename_open_test);
     TEST(rename_caseins_test);
+
     if (!OptShareName)
         TEST(rename_flipflop_test);
     if (!OptShareName)

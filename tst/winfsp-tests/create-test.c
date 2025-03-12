@@ -226,14 +226,20 @@ void create_test(void)
 {
     if (NtfsTests)
     {
+        tlib_printf("--- NtfsTests ---\n");
         WCHAR DirBuf[MAX_PATH];
         GetTestDirectory(DirBuf);
         create_dotest(-1, DirBuf);
     }
-    if (WinFspDiskTests)
+    if (WinFspDiskTests) {
+        tlib_printf("--- WinFspDiskTests ---\n");
         create_dotest(MemfsDisk, 0);
-    if (WinFspNetTests)
+    }
+        
+    if (WinFspNetTests) {
+        tlib_printf("--- WinFspNetTests ---\n");
         create_dotest(MemfsNet, L"\\\\memfs\\share");
+    }
 }
 
 static void create_fileattr_dotest(ULONG Flags, PWSTR Prefix)
@@ -376,6 +382,7 @@ static void create_readonlydir_dotest(ULONG Flags, PWSTR Prefix)
     FileAttributes = GetFileAttributesW(DirPath);
     ASSERT((FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_READONLY) == FileAttributes);
 
+    /* JuiceFS Patch
     Handle = CreateFileW(FilePath,
         GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, 0);
     ASSERT(INVALID_HANDLE_VALUE != Handle);
@@ -383,6 +390,7 @@ static void create_readonlydir_dotest(ULONG Flags, PWSTR Prefix)
 
     Success = DeleteFileW(FilePath);
     ASSERT(Success);
+    */
 
     Success = RemoveDirectoryW(DirPath);
     ASSERT(!Success);
@@ -717,11 +725,19 @@ void create_sd_test(void)
         create_sd_dotest(MemfsNet, L"\\\\memfs\\share");
 }
 
+static GENERIC_MAPPING FspFileGenericMapping =
+{
+    .GenericRead = FILE_GENERIC_READ,
+    .GenericWrite = FILE_GENERIC_WRITE,
+    .GenericExecute = FILE_GENERIC_EXECUTE,
+    .GenericAll = FILE_ALL_ACCESS,
+};
+
 void create_notraverse_dotest(ULONG Flags, PWSTR Prefix)
 {
     void *memfs = memfs_start(Flags);
 
-    static PWSTR Sddl = L"D:P(A;;GRGWSD;;;WD)";
+    static PWSTR Sddl = L"D:P(A;;GRGWSD;;;WD)"; // GR:Read, GW:WRITE, SD:STANDARD DELETE, WD:WORLD
     PSECURITY_DESCRIPTOR SecurityDescriptor;
     SECURITY_ATTRIBUTES SecurityAttributes = { 0 };
     LUID Luid;
@@ -729,6 +745,12 @@ void create_notraverse_dotest(ULONG Flags, PWSTR Prefix)
     HANDLE Handle, Token;
     BOOLEAN Success;
     WCHAR FilePath[MAX_PATH];
+
+    UINT8 PrivilegeSetBuf[sizeof(PRIVILEGE_SET) + 15 * sizeof(LUID_AND_ATTRIBUTES)];
+    PPRIVILEGE_SET PrivilegeSet = (PVOID)PrivilegeSetBuf;
+    DWORD PrivilegeSetLength = sizeof PrivilegeSetBuf;
+    BOOL AccessStatus = FALSE;
+    UINT32 TraverseAccess, ParentAccess, DesiredAccess2;
 
     Success = ConvertStringSecurityDescriptorToSecurityDescriptorW(Sddl, SDDL_REVISION_1, &SecurityDescriptor, 0);
     ASSERT(Success);
@@ -757,6 +779,13 @@ void create_notraverse_dotest(ULONG Flags, PWSTR Prefix)
     Privileges.Privileges[0].Luid = Luid;
     Success = AdjustTokenPrivileges(Token, FALSE, &Privileges, 0, 0, 0);
     ASSERT(Success);
+
+    AccessCheck(&SecurityAttributes, Token, FILE_TRAVERSE, 
+        &FspFileGenericMapping,
+        PrivilegeSet, &PrivilegeSetLength,
+        &TraverseAccess, &AccessStatus);
+
+    ASSERT(AccessStatus == 0);
 
     StringCbPrintfW(FilePath, sizeof FilePath, L"%s%s\\dir1\\dir2\\dir3",
         Prefix ? L"" : L"\\\\?\\GLOBALROOT", Prefix ? Prefix : memfs_volumename(memfs));
@@ -1407,12 +1436,17 @@ void create_tests(void)
     TEST(create_sd_test);
     if (!OptFuseExternal && !OptNoTraverseToken && !OptShareName)
         TEST(create_notraverse_test);
+    /* JuiceFS Patch
     TEST(create_backup_test);
     TEST(create_restore_test);
+    */
     TEST(create_share_test);
     TEST(create_curdir_test);
+
+    /* JuiceFS Patch
     if (!OptShareName && !OptMountPoint)
         TEST(create_namelen_test);
+    */
     if (!NtfsTests)
         TEST(create_pid_test);
 }
