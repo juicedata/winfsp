@@ -440,8 +440,7 @@ void setfileinfo_dotest(ULONG Flags, PWSTR Prefix, ULONG FileInfoTimeout)
     Success = GetFileInformationByHandle(Handle, &FileInfo);
     ASSERT(Success);
 
-    /* Juicefs Patch
-    ASSERT(*(PUINT64)&FileInfo0.ftCreationTime == *(PUINT64)&FileInfo.ftCreationTime);
+    //ASSERT(*(PUINT64)&FileInfo0.ftCreationTime == *(PUINT64)&FileInfo.ftCreationTime);
     ASSERT(116444736000000000ULL + 0x4200000042ULL == *(PUINT64)&FileInfo.ftLastAccessTime);
     ASSERT(116444736000000000ULL + 0x4200000042ULL == *(PUINT64)&FileInfo.ftLastWriteTime);
 
@@ -450,7 +449,7 @@ void setfileinfo_dotest(ULONG Flags, PWSTR Prefix, ULONG FileInfoTimeout)
     
     Success = GetFileInformationByHandle(Handle, &FileInfo);
     ASSERT(Success);
-    ASSERT(116444736000000000ULL + 0x4200000042ULL == *(PUINT64)&FileInfo.ftCreationTime);
+    //ASSERT(116444736000000000ULL + 0x4200000042ULL == *(PUINT64)&FileInfo.ftCreationTime);
 
     Offset = SetFilePointer(Handle, 42, 0, 0);
     ASSERT(42 == Offset);
@@ -462,7 +461,6 @@ void setfileinfo_dotest(ULONG Flags, PWSTR Prefix, ULONG FileInfoTimeout)
     ASSERT(Success);
     ASSERT(42 == FileInfo.nFileSizeLow);
     ASSERT(0 == FileInfo.nFileSizeHigh);
-    */
 
     CloseHandle(Handle);
 
