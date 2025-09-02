@@ -1272,7 +1272,7 @@ static NTSTATUS Create(FSP_FILE_SYSTEM *FileSystem,
 
 static NTSTATUS Open(FSP_FILE_SYSTEM *FileSystem,
     PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess,
-    PVOID *PFileNode, FSP_FSCTL_FILE_INFO *FileInfo)
+    PVOID *PFileNode, FSP_FSCTL_FILE_INFO *FileInfo, BOOL *PDisableCache)
 {
     MEMFS *Memfs = (MEMFS *)FileSystem->UserContext;
     MEMFS_FILE_NODE *FileNode;

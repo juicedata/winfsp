@@ -492,6 +492,7 @@ static NTSTATUS FspFileSystemOpCreate_FileOpen(FSP_FILE_SYSTEM *FileSystem,
     FSP_FSCTL_TRANSACT_FULL_CONTEXT FullContext;
     FSP_FSCTL_OPEN_FILE_INFO OpenFileInfo;
     PSECURITY_DESCRIPTOR OpenDescriptor = 0;
+    BOOL DisableCache = FALSE;
 
     Result = FspFileSystemOpenCheck(FileSystem, Request, Response, TRUE, &GrantedAccess,
         &OpenDescriptor);
@@ -505,7 +506,7 @@ static NTSTATUS FspFileSystemOpCreate_FileOpen(FSP_FILE_SYSTEM *FileSystem,
     OpenFileInfo.NormalizedNameSize = FSP_FSCTL_TRANSACT_RSP_BUFFER_SIZEMAX;
     Result = FileSystem->Interface->Open(FileSystem,
         (PWSTR)Request->Buffer, Request->Req.Create.CreateOptions, GrantedAccess,
-        AddrOfFileContext(FullContext), &OpenFileInfo.FileInfo);
+        AddrOfFileContext(FullContext), &OpenFileInfo.FileInfo, &DisableCache);
     if (!NT_SUCCESS(Result))
     {
         FspDeleteSecurityDescriptor(OpenDescriptor, FspAccessCheckEx);
@@ -528,6 +529,7 @@ static NTSTATUS FspFileSystemOpCreate_FileOpen(FSP_FILE_SYSTEM *FileSystem,
     Response->IoStatus.Information = FILE_OPENED;
     SetFileContext(Response->Rsp.Create.Opened, FullContext);
     Response->Rsp.Create.Opened.GrantedAccess = GrantedAccess;
+    Response->Rsp.Create.Opened.DisableCache = DisableCache;
     memcpy(&Response->Rsp.Create.Opened.FileInfo,
         &OpenFileInfo.FileInfo, sizeof OpenFileInfo.FileInfo);
     return STATUS_SUCCESS;
@@ -543,6 +545,7 @@ static NTSTATUS FspFileSystemOpCreate_FileOpenIf(FSP_FILE_SYSTEM *FileSystem,
     FSP_FSCTL_OPEN_FILE_INFO OpenFileInfo;
     PSECURITY_DESCRIPTOR OpenDescriptor = 0;
     BOOLEAN Create = FALSE;
+    BOOL DisableCache = FALSE;
 
     Result = FspFileSystemOpenCheck(FileSystem, Request, Response, TRUE, &GrantedAccess,
         &OpenDescriptor);
@@ -562,7 +565,7 @@ static NTSTATUS FspFileSystemOpCreate_FileOpenIf(FSP_FILE_SYSTEM *FileSystem,
         OpenFileInfo.NormalizedNameSize = FSP_FSCTL_TRANSACT_RSP_BUFFER_SIZEMAX;
         Result = FileSystem->Interface->Open(FileSystem,
             (PWSTR)Request->Buffer, Request->Req.Create.CreateOptions, GrantedAccess,
-            AddrOfFileContext(FullContext), &OpenFileInfo.FileInfo);
+            AddrOfFileContext(FullContext), &OpenFileInfo.FileInfo, &DisableCache);
         if (!NT_SUCCESS(Result))
         {
             FspDeleteSecurityDescriptor(OpenDescriptor, FspAccessCheckEx);
@@ -629,6 +632,7 @@ static NTSTATUS FspFileSystemOpCreate_FileOpenIf(FSP_FILE_SYSTEM *FileSystem,
     Response->IoStatus.Information = Create ? FILE_CREATED : FILE_OPENED;
     SetFileContext(Response->Rsp.Create.Opened, FullContext);
     Response->Rsp.Create.Opened.GrantedAccess = GrantedAccess;
+    Response->Rsp.Create.Opened.DisableCache = DisableCache;
     memcpy(&Response->Rsp.Create.Opened.FileInfo,
         &OpenFileInfo.FileInfo, sizeof OpenFileInfo.FileInfo);
     return STATUS_SUCCESS;
@@ -653,7 +657,7 @@ static NTSTATUS FspFileSystemOpCreate_FileOverwrite(FSP_FILE_SYSTEM *FileSystem,
     OpenFileInfo.NormalizedNameSize = FSP_FSCTL_TRANSACT_RSP_BUFFER_SIZEMAX;
     Result = FileSystem->Interface->Open(FileSystem,
         (PWSTR)Request->Buffer, Request->Req.Create.CreateOptions, GrantedAccess,
-        AddrOfFileContext(FullContext), &OpenFileInfo.FileInfo);
+        AddrOfFileContext(FullContext), &OpenFileInfo.FileInfo, NULL);
     if (!NT_SUCCESS(Result))
         return Result;
 
@@ -682,6 +686,7 @@ static NTSTATUS FspFileSystemOpCreate_FileOverwriteIf(FSP_FILE_SYSTEM *FileSyste
     FSP_FSCTL_OPEN_FILE_INFO OpenFileInfo;
     BOOLEAN Supersede = FILE_SUPERSEDE == ((Request->Req.Create.CreateOptions >> 24) & 0xff);
     BOOLEAN Create = FALSE;
+    BOOL DisableCache = FALSE;
 
     Result = FspFileSystemOverwriteCheck(FileSystem, Request, Response, TRUE, &GrantedAccess);
     if (!NT_SUCCESS(Result) || STATUS_REPARSE == Result)
@@ -700,7 +705,7 @@ static NTSTATUS FspFileSystemOpCreate_FileOverwriteIf(FSP_FILE_SYSTEM *FileSyste
         OpenFileInfo.NormalizedNameSize = FSP_FSCTL_TRANSACT_RSP_BUFFER_SIZEMAX;
         Result = FileSystem->Interface->Open(FileSystem,
             (PWSTR)Request->Buffer, Request->Req.Create.CreateOptions, GrantedAccess,
-            AddrOfFileContext(FullContext), &OpenFileInfo.FileInfo);
+            AddrOfFileContext(FullContext), &OpenFileInfo.FileInfo, &DisableCache);
         if (!NT_SUCCESS(Result))
         {
             if (STATUS_OBJECT_NAME_NOT_FOUND != Result)
@@ -756,6 +761,7 @@ static NTSTATUS FspFileSystemOpCreate_FileOverwriteIf(FSP_FILE_SYSTEM *FileSyste
         (Supersede ? FILE_SUPERSEDED : FILE_OVERWRITTEN);
     SetFileContext(Response->Rsp.Create.Opened, FullContext);
     Response->Rsp.Create.Opened.GrantedAccess = GrantedAccess;
+    Response->Rsp.Create.Opened.DisableCache = DisableCache;
     memcpy(&Response->Rsp.Create.Opened.FileInfo,
         &OpenFileInfo.FileInfo, sizeof OpenFileInfo.FileInfo);
     return STATUS_SUCCESS;
@@ -771,6 +777,7 @@ static NTSTATUS FspFileSystemOpCreate_FileOpenTargetDirectory(FSP_FILE_SYSTEM *F
     FSP_FSCTL_TRANSACT_FULL_CONTEXT FullContext;
     FSP_FSCTL_OPEN_FILE_INFO OpenFileInfo;
     UINT32 Information;
+    BOOL DisableCache = FALSE;
 
     Result = FspFileSystemOpenTargetDirectoryCheck(FileSystem, Request, Response, &GrantedAccess);
     if (!NT_SUCCESS(Result) || STATUS_REPARSE == Result)
@@ -786,7 +793,7 @@ static NTSTATUS FspFileSystemOpCreate_FileOpenTargetDirectory(FSP_FILE_SYSTEM *F
         (Request->Req.Create.CreateOptions | FILE_DIRECTORY_FILE) & ~FILE_NON_DIRECTORY_FILE;
     Result = FileSystem->Interface->Open(FileSystem,
         Parent, CreateOptions, GrantedAccess,
-        AddrOfFileContext(FullContext), &OpenFileInfo.FileInfo);
+        AddrOfFileContext(FullContext), &OpenFileInfo.FileInfo, &DisableCache);
     FspPathCombine((PWSTR)Request->Buffer, Suffix);
     if (!NT_SUCCESS(Result))
         return Result;
@@ -808,6 +815,7 @@ static NTSTATUS FspFileSystemOpCreate_FileOpenTargetDirectory(FSP_FILE_SYSTEM *F
     Response->IoStatus.Information = Information;
     SetFileContext(Response->Rsp.Create.Opened, FullContext);
     Response->Rsp.Create.Opened.GrantedAccess = GrantedAccess;
+    Response->Rsp.Create.Opened.DisableCache = DisableCache;
     memcpy(&Response->Rsp.Create.Opened.FileInfo,
         &OpenFileInfo.FileInfo, sizeof OpenFileInfo.FileInfo);
     return STATUS_SUCCESS;

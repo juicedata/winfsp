@@ -321,7 +321,7 @@ typedef struct _FSP_FILE_SYSTEM_INTERFACE
      */
     NTSTATUS (*Open)(FSP_FILE_SYSTEM *FileSystem,
         PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess,
-        PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo);
+        PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo, BOOL *PDisableCache);
     /**
      * Overwrite a file.
      *

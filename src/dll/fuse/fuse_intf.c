@@ -1095,7 +1095,7 @@ exit:
 
 static NTSTATUS fsp_fuse_intf_Open(FSP_FILE_SYSTEM *FileSystem,
     PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess,
-    PVOID *PFileDesc, FSP_FSCTL_FILE_INFO *FileInfo)
+    PVOID *PFileDesc, FSP_FSCTL_FILE_INFO *FileInfo, BOOL* PDisableCache)
 {
     struct fuse *f = FileSystem->UserContext;
     struct fuse_context *context = fsp_fuse_get_context(f->env);
@@ -1197,6 +1197,10 @@ static NTSTATUS fsp_fuse_intf_Open(FSP_FILE_SYSTEM *FileSystem,
      *
      * Ignore fuse_file_info::nonseekable.
      */
+
+    if (0 != PDisableCache) {
+        *PDisableCache = fi.direct_io;
+    }
 
     *PFileDesc = filedesc;
     memcpy(FileInfo, &FileInfoBuf, sizeof FileInfoBuf);
