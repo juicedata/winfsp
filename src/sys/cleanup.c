@@ -1,7 +1,7 @@
 /**
  * @file sys/cleanup.c
  *
- * @copyright 2015-2024 Bill Zissimopoulos
+ * @copyright 2015-2025 Bill Zissimopoulos
  */
 /*
  * This file is part of WinFsp.
@@ -242,8 +242,7 @@ static VOID FspFsvolCleanupRequestFini(FSP_FSCTL_TRANSACT_REQ *Request, PVOID Co
     FspFileNodeReleaseOwner(FileNode, Pgio, Request);
 
     FspFileNodeCleanupComplete(FileNode, FileObject, !!Request->Req.Cleanup.Delete);
-    if (!FileNode->IsDirectory)
-        FspFileNodeOplockCheck(FileNode, Irp);
+    FspFileNodeOplockCheck(FileNode, Irp);
     SetFlag(FileObject->Flags, FO_CLEANUP_COMPLETE);
 
     MainFileHandle = FileDesc->MainFileHandle;

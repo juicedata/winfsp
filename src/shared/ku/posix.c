@@ -14,7 +14,7 @@
  * [SNAME]
  *     https://www.cygwin.com/cygwin-ug-net/using-specialnames.html
  *
- * @copyright 2015-2024 Bill Zissimopoulos
+ * @copyright 2015-2025 Bill Zissimopoulos
  */
 /*
  * This file is part of WinFsp.
@@ -1416,7 +1416,7 @@ FSP_API NTSTATUS FspPosixMapPosixToWindowsPathEx(const char *PosixPath, PWSTR *P
         goto lasterror;
 
     WindowsPath = MemAlloc(Size * sizeof(WCHAR));
-    if (0 == PosixPath)
+    if (0 == WindowsPath)
     {
         Result = STATUS_INSUFFICIENT_RESOURCES;
         goto exit;

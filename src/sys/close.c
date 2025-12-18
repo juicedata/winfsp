@@ -1,7 +1,7 @@
 /**
  * @file sys/close.c
  *
- * @copyright 2015-2024 Bill Zissimopoulos
+ * @copyright 2015-2025 Bill Zissimopoulos
  */
 /*
  * This file is part of WinFsp.
@@ -74,6 +74,9 @@ static NTSTATUS FspFsvolClose(
     FSP_FSCTL_TRANSACT_REQ *Request;
 
     ASSERT(FileNode == FileDesc->FileNode);
+
+    if (!FlagOn(FileObject->Flags, FO_CLEANUP_COMPLETE))
+        FspFileNodeOplockCheck(FileNode, Irp);
 
     /* create the user-mode file system request; MustSucceed because IRP_MJ_CLOSE cannot fail */
     FspIopCreateRequestMustSucceed(0, 0, 0, &Request);

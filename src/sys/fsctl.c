@@ -1,7 +1,7 @@
 /**
  * @file sys/fsctl.c
  *
- * @copyright 2015-2024 Bill Zissimopoulos
+ * @copyright 2015-2025 Bill Zissimopoulos
  */
 /*
  * This file is part of WinFsp.
@@ -440,9 +440,6 @@ static NTSTATUS FspFsvolFileSystemControlOplock(
     ULONG OutputBufferLength = IrpSp->Parameters.FileSystemControl.OutputBufferLength;
     ULONG OplockCount;
     FSP_FSVOL_FILESYSTEM_CONTROL_OPLOCK_COMPLETION_CONTEXT *CompletionContext;
-
-    if (FileNode->IsDirectory)
-        return STATUS_INVALID_PARAMETER;
 
     /*
      * As per FastFat:
