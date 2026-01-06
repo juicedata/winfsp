@@ -140,8 +140,8 @@
                 <File Id="FILE.$(var.MyProductFileName)_x86.dll.a64" Name="$(var.MyProductFileName)-x86.dll" KeyPath="yes" />
                 <Condition><![CDATA[OSARCH = "ARM64"]]></Condition>
             </Component>
-
             <!-- On Win64 register $(var.MyProductFileName)-x64.dll -->
+
             <Component Id="C.$(var.MyProductFileName)_a64.dll.x64" Guid="026DA201-43E1-450C-9687-8A684FBF2D2D">
                 <File Id="FILE.$(var.MyProductFileName)_a64.dll.x64" Name="$(var.MyProductFileName)-a64.dll" KeyPath="yes" />
                 <Condition><![CDATA[OSARCH = "AMD64"]]></Condition>

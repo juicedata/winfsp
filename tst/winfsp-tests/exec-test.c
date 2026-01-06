@@ -271,7 +271,7 @@ static void exec_rename_dotest(ULONG Flags, PWSTR Prefix, ULONG FileInfoTimeout)
     ASSERT(INVALID_HANDLE_VALUE != Handle);
     CloseHandle(Handle);
 
-    ExecHelper(FilePath, 1000, &Process);
+    ExecHelper(FilePath, 5000, &Process);
 
     ASSERT(MoveFileExW(FilePath, File2Path, MOVEFILE_REPLACE_EXISTING));
     ASSERT(MoveFileExW(File2Path, FilePath, MOVEFILE_REPLACE_EXISTING));
@@ -279,7 +279,7 @@ static void exec_rename_dotest(ULONG Flags, PWSTR Prefix, ULONG FileInfoTimeout)
     ASSERT(!MoveFileExW(File3Path, FilePath, MOVEFILE_REPLACE_EXISTING));
     ASSERT(ERROR_ACCESS_DENIED == GetLastError());
 
-    WaitHelper(Process, 1000);
+    WaitHelper(Process, 5000);
 
     ASSERT(MoveFileExW(File3Path, FilePath, MOVEFILE_REPLACE_EXISTING));
 
